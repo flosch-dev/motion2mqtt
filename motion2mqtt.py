@@ -5,8 +5,19 @@ python3 module required:
 # apt install python3-gpiozero
 # apt install python3-paho-mqtt
 
-to run every 5 min via cron, add the following cronjob:
-*/5 * * * * /<path-to-file>/sysmon2mqtt.py
+run:
+# ./motion2mqtt <RPI_GPI> <Sensor#>
+i.e.
+
+# ./motion2mqtt 27 Sensor1
+
+in order to use with systemd, place motion2mqtt_1.service into /etc/systemd/system/
+
+# mv motion2mqtt_1.service /etc/systemd/system/
+# systemctl daemon-reload
+# systemctl start motion2mqtt_1.service
+# systemctl enable motion2mqtt_1.service
+
 """
 
 import time
