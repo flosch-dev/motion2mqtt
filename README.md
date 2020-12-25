@@ -6,7 +6,7 @@ python3 module required:
 # apt install python3-paho-mqtt
 ```
 run:
-# ./motion2mqtt <RPI_GPI> <Sensor#>
+./motion2mqtt <RPI_GPI> <Sensor#>
 i.e.
 ```bash
 # ./motion2mqtt 27 Sensor1
