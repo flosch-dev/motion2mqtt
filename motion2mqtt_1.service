@@ -1,0 +1,11 @@
+[Unit]
+# Human readable name of the unit
+Description=Motion2MQTT Sensor 1
+
+[Service]
+# Command to execute when the service is started
+ExecStart=/root/motion2mqtt.py 27 Sensor1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
