@@ -6,6 +6,7 @@ Description=Motion2MQTT Sensor 2
 # Command to execute when the service is started
 ExecStart=/root/motion2mqtt.py 22 Sensor2
 Restart=on-failure
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target

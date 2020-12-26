@@ -30,6 +30,7 @@ from gpiozero import MotionSensor
 """ ---- config -------- """
 
 MQTT_HOST = ''
+MQTT_PORT = 1883
 MQTT_CLIENT_ID = os.popen('hostname').read().rstrip()
 
 """ ---------------------------------"""
@@ -42,34 +43,42 @@ auth = {
   'password':"MQTT_PASS"
 }
 
-def mqtt_publish(state):
-    """ function to send MQTT message """
+def detect_motion(mqttclient):
+    """
+    function to detect motion and publish via mqtt connection
+    loop every 100ms
+    """
+    pir = MotionSensor(GPIO)
+    while True:
+        if pir.motion_detected:
+            mqttclient.publish("CHANNEL/Motion/" + SENSOR,
+                                payload="motion")
+            mqttclient.publish("CHANNEL/Motion/state",
+                                payload=SENSOR + " motion")
+            time.sleep(2)
+            mqttclient.publish("CHANNEL/Motion/" + SENSOR,
+                                payload="noMotion")
+            mqttclient.publish("CHANNEL/Motion/state",
+                                payload=SENSOR + " noMotion")
+        time.sleep(0.1)
+
+def on_disconnect(client, userdata,rc=0):
+    print("DisConnected result code "+str(rc))
+    client.loop_stop()
+    exit(1)
+
+def main():
+    """
+    Main function
+    """
+    mqttclient = mqtt.Client(MQTT_CLIENT_ID)
     try:
-        mqttclient.publish("CHANNEL/Motion/" + SENSOR,
-                    payload=state,
-                    qos=0,
-                    retain=False)
+        mqttclient.connect(MQTT_HOST, port=MQTT_PORT, keepalive=60)
     except:
-        pass
+        print("MQTT Connection error")
+    mqttclient.loop_start()
+    mqttclient.on_disconnect = on_disconnect
+    detect_motion(mqttclient)
 
-    try:
-        mqttclient.publish("CHANNEL/Motion/state",
-                    payload=SENSOR + " " + state,
-                    qos=0,
-                    retain=False)
-    except:
-        pass
-
-pir = MotionSensor(GPIO)
-mqttclient = mqtt.Client(MQTT_CLIENT_ID)
-try:
-    mqttclient.connect(MQTT_HOST, port=MQTT_PORT, keepalive=60)
-except:
-    print("Connection error - retrying...")
-
-while True:
-    if pir.motion_detected:
-        mqtt_publish("motion")
-        time.sleep(2)
-        mqtt_publish("noMotion")
-    time.sleep(0.1)
+if __name__=="__main__":
+   main()
