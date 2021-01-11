@@ -70,7 +70,7 @@ def detect_motion(mqttclient):
                                 qos=1,
                                 retain=True)
 
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 def on_disconnect(client, userdata,rc=0):
     print("DisConnected result code "+str(rc))
